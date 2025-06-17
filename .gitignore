@@ -1,0 +1,117 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore environment files
+.env
+.env.local
+.env.*.local
+
+# Ignore log files
+*.log
+
+# Ignore cache and temporary files
+/cache/*
+/temp/*
+/tmp/*
+
+# Ignore uploaded files and documents
+/documents/*
+!/documents/do-not-ignore-this-folder
+
+# Ignore custom modules
+/htdocs/custom/*
+!/htdocs/custom/README.md
+
+# Ignore composer files
+/vendor/
+composer.lock
+
+# Ignore node modules
+/node_modules/
+
+# Ignore local configuration files
+/conf/conf.php
+/htdocs/conf/conf.php
+
+# Ignore database dumps
+*.sql
+*.sql.gz
+
+# Ignore backup files
+*.bak
+*.swp
+*~
+
+# Ignore Dolibarr specific files
+/documents/install.lock
+/documents/install/*
+/htdocs/install/*
+/htdocs/install
+
+# Ignore Dolibarr temp files
+/htdocs/temp/*
+/htdocs/main.inc.php
+/htdocs/conf/conf.php
+
+# Ignore Dolibarr generated files
+/htdocs/theme/common/theme_vars.inc.php
+/htdocs/theme/eldy/theme_vars.odesign.php
+
+# Ignore user uploaded files
+/htdocs/documents/fckeditor/UserFiles/*
+/htdocs/documents/fckeditor/UserFiles/
+
+# Ignore Dolibarr cache
+/htdocs/cache/*
+/htdocs/view/*
+/htdocs/theme/*/cache/*
+
+# Ignore IDE specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore environment files
+.env
+.env.local
+.env.*.local
+
+# Ignore log files
+*.log
+
+# Ignore cache and temporary files
+/cache/*
+/temp/*
+/tmp/*
+
+# Ignore Dolibarr specific files
+/htdocs/conf/conf.php
+/htdocs/install/*
+/htdocs/install
+/htdocs/main.inc.php
+/htdocs/theme/common/theme_vars.inc.php
+/htdocs/theme/eldy/theme_vars.odesign.php
+/htdocs/documents/fckeditor/UserFiles/*
+/htdocs/documents/fckeditor/UserFiles/
+/htdocs/cache/*
+/htocs/view/*
+/htdocs/theme/*/cache/*
+
+# Ignore user uploaded files
+/htdocs/documents/*
+!/htdocs/documents/do-not-ignore-this-folder
+
+# Ignore vendor files
+/vendor/
+
+# Ignore custom modules
+/htdocs/custom/*
+!/htdocs/custom/README.md
