@@ -34,12 +34,12 @@ There is a lot of different solutions to install Dolibarr.
 
 ### Using packages 
 
-If you have low technical skills and you're looking to install Dolibarr ERP/CRM with just few clicks, you can use one of the packaged versions (see next chapter if you have IT knowledge) :
+If you have low technical skills and you're looking to install Dolibarr ERP/CRM with just a few clicks, you can use one of the packaged versions:
 
 - [DoliWamp for Windows](https://wiki.dolibarr.org/index.php/Dolibarr_for_Windows_(DoliWamp))
-- [DoliDeb for Debian, Ubuntu](https://wiki.dolibarr.org/index.php/Dolibarr_for_Ubuntu_or_Debian)
+- [DoliDeb for Debian](https://wiki.dolibarr.org/index.php/Dolibarr_for_Ubuntu_or_Debian)
 - DoliRpm for Red Hat, Fedora, OpenSuse, Mandriva or Mageia
-- The Docker image (see chapter "Using Docker")
+- The Docker image (see next chapter)
 
 Releases can be downloaded from [official website](https://www.dolibarr.org/).
 
@@ -116,7 +116,6 @@ See the [ChangeLog](https://github.com/Dolibarr/dolibarr/blob/develop/ChangeLog)
 - Product Variants
 - Bill of Materials (BOM)
 - Manufacturing Orders (MO)
-- Workstations / Workplaces
 
  Customer/Sales Management
 
@@ -176,13 +175,12 @@ See the [ChangeLog](https://github.com/Dolibarr/dolibarr/blob/develop/ChangeLog)
 - Data export/import
 - Barcodes
 - LDAP connectivity
-- Click-To-Dial integration
+- ClickToDial integration
 - Mass emailing
 - RSS integration
 - Social platforms linking
 - Payment platforms integration (PayPal, Stripe, Paybox...)
 - Email-Collector
-- AI support via API
 
 (around 100 modules available by default, 1000+ addons at the official marketplace Dolistore.com)
 
@@ -239,7 +237,7 @@ These are features that Dolibarr does **not** yet fully support:
 Administrator, user, developer and translator's documentation are available along with other community resources in the [Wiki](https://wiki.dolibarr.org).
 
 
-## CONTRIBUTING AND RELEASE PROCESS
+## CONTRIBUTING
 
 This project exists thanks to all the people who contribute.
 Please read the instructions on how to contribute (report a bug/error, a feature request, send code, ...)  [[Contributing](https://github.com/Dolibarr/dolibarr/blob/develop/.github/CONTRIBUTING.md)]
@@ -247,8 +245,6 @@ Please read the instructions on how to contribute (report a bug/error, a feature
 A View on Contributors:
 
 [![Dolibarr](https://opencollective.com/dolibarr/contributors.svg?width=890&button=false)](https://github.com/Dolibarr/dolibarr/graphs/contributors)
-
-The release process is described into the file dev/build/makepack-howto.md
 
 
 ## CREDITS
@@ -262,7 +258,6 @@ See [COPYRIGHT](https://github.com/Dolibarr/dolibarr/blob/develop/COPYRIGHT) fil
 
 Follow Dolibarr project on:
 
-- [Mastodon](https://pouet.chapril.org/@dolibarr)
 - [Facebook](https://www.facebook.com/dolibarr)
 - [X](https://x.com/dolibarr)
 - [LinkedIn](https://www.linkedin.com/company/association-dolibarr)

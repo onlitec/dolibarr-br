@@ -6,6 +6,7 @@ languages:
 engines:
   phpcodesniffer: true
 exclude_paths:
+  - 'build/*'
   - 'dev/*'
   - 'doc/*'
   - 'test/*'

@@ -18,7 +18,7 @@ class ActionsServiceordergeo
      */
     public function formObjectOptions($parameters, &$object, &$action, $hookmanager)
     {
-        global $langs;
+        global $langs, $conf;
         if (in_array($object->table_element, array('commande', 'fichinter'))) {
             // Exibir Endereço de Destino apenas para pedidos (commande)
             if ($object->table_element === 'commande') {
@@ -44,34 +44,67 @@ class ActionsServiceordergeo
             print '<label>' . $langs->trans('FieldServiceAddress') . '</label>';
             print '<input type="text" name="service_address" id="service_address" value="'.htmlspecialchars($object->service_address).'" class="form-control">';
             print '</div>';
-            print '<script>
-document.getElementById("service_type").addEventListener("change", function() {
-    var grp = document.getElementById("service_address_group");
-    grp.style.display = this.value === "external" ? "block" : "none";
-});
-</script>';
-            // Origem (se vazio, usa endereço da empresa)
-            print '<div class="form-group">';
+            // Valores padrão para origem e custos
+            $defaultOrigin = getDolGlobalString('MAIN_INFO_SOCIETE_ADDRESS') . ', ' . getDolGlobalString('MAIN_INFO_SOCIETE_ZIP') . ' ' . getDolGlobalString('MAIN_INFO_SOCIETE_TOWN');
+            $useCompany = empty($object->origin_address) || $object->origin_address === $defaultOrigin;
+            $valueOrigin = $useCompany ? $defaultOrigin : $object->origin_address;
+            $valueFuelPrice = isset($object->fuel_price) && $object->fuel_price !== '' ? $object->fuel_price : $conf->global->SERVICEORDERGEO_DEFAULT_FUEL_PRICE;
+            $valueFuelConsumption = isset($object->fuel_consumption) && $object->fuel_consumption !== '' ? $object->fuel_consumption : $conf->global->SERVICEORDERGEO_DEFAULT_FUEL_CONSUMPTION;
+            $valueOtherCosts = isset($object->other_costs) && $object->other_costs !== '' ? $object->other_costs : $conf->global->SERVICEORDERGEO_DEFAULT_OTHER_COSTS;
+            // Checkbox para usar endereço da empresa
+            print '<div class="form-group"><div class="form-check">';
+            print '<input type="checkbox" name="use_company_address" id="use_company_address" class="form-check-input"'.($useCompany?' checked':'').'>';
+            print '<label class="form-check-label" for="use_company_address">'.$langs->trans('UseCompanyAddress').'</label>';
+            print '</div></div>';
+            // Origem e parâmetros de custo (apenas para serviço externo)
+            print '<div class="form-group" id="origin_group"'.($object->service_type!=='external'?' style="display:none;"':'').'>';
             print '<label>' . $langs->trans('FieldOriginAddress') . '</label>';
-            print '<input type="text" name="origin_address" id="origin_address" value="'.htmlspecialchars($object->origin_address).'" class="form-control" placeholder="'.dol_escape_htmltag($langs->trans('HelpOriginAddressUseCompany')).'">';
+            print '<input type="text" name="origin_address" id="origin_address" value="'.htmlspecialchars($valueOrigin).'" class="form-control" placeholder="'.dol_escape_htmltag($langs->trans('HelpOriginAddressUseCompany')).'">';
             print '</div>';
-            // Parâmetros de custo
-            print '<div class="form-row">';
+            print '<div class="form-row" id="cost_group"'.($object->service_type!=='external'?' style="display:none;"':'').'>';
             print '<div class="form-group col-md-4">';
             print '<label>' . $langs->trans('FieldFuelPrice') . '</label>';
-            print '<input type="text" name="fuel_price" id="fuel_price" value="'.htmlspecialchars($object->fuel_price).'" class="form-control">';
+            print '<input type="text" name="fuel_price" id="fuel_price" value="'.htmlspecialchars($valueFuelPrice).'" class="form-control">';
             print '</div>';
             print '<div class="form-group col-md-4">';
             print '<label>' . $langs->trans('FieldFuelConsumption') . '</label>';
-            print '<input type="text" name="fuel_consumption" id="fuel_consumption" value="'.htmlspecialchars($object->fuel_consumption).'" class="form-control">';
+            print '<input type="text" name="fuel_consumption" id="fuel_consumption" value="'.htmlspecialchars($valueFuelConsumption).'" class="form-control">';
             print '</div>';
             print '<div class="form-group col-md-4">';
             print '<label>' . $langs->trans('FieldOtherCosts') . '</label>';
-            print '<input type="text" name="other_costs" id="other_costs" value="'.htmlspecialchars($object->other_costs).'" class="form-control">';
+            print '<input type="text" name="other_costs" id="other_costs" value="'.htmlspecialchars($valueOtherCosts).'" class="form-control">';
             print '</div>';
             print '</div>';
+            // Toggle unificado para fields no fichinter
+            print '<script>
+(function(){
+    var sel = document.getElementById("service_type");
+    var sa = document.getElementById("service_address_group");
+    var og = document.getElementById("origin_group");
+    var cg = document.getElementById("cost_group");
+    function toggleFields(){
+        var show = sel.value === "external";
+        sa.style.display = show ? "block" : "none";
+        og.style.display = show ? "block" : "none";
+        cg.style.display = show ? "block" : "none";
+    }
+    sel.addEventListener("change", toggleFields);
+    toggleFields();
+})();
+</script>';
             // Script de geocoding
             print '<script src="'.dol_buildpath('/custom/serviceordergeo/js/serviceordergeo.js',1).'" defer></script>';
+            // Script para alternar uso do endereço da empresa
+            print '<script>';
+            print '(function(){';
+            print 'var useChk = document.getElementById("use_company_address");';
+            print 'var orig = document.getElementById("origin_address");';
+            print 'var defaultAddr = '.json_encode($defaultOrigin).';';
+            print 'function toggleUse(){ if(useChk.checked){ orig.value = defaultAddr; orig.readOnly = true; } else { orig.readOnly = false; } }';
+            print 'useChk.addEventListener("change", toggleUse);';
+            print 'toggleUse();';
+            print '})();';
+            print '</script>';
         }
     }
     /**

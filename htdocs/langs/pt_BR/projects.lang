@@ -171,6 +171,6 @@ ProjectBillTimeDescription=Verifique se você inseriu a planilha de horas nas ta
 ProjectFollowTasks=Siga tarefas ou tempo gasto
 UsageBillTimeShort=Uso: tempo da conta
 InvoiceToUse=Rascunho de fatura a ser usada
-NewInter=Nova Intervenção
+NewInter=Nova Ordem de Serviço
 RefTaskParent=Ref. Tarefa principal
 StartDateCannotBeAfterEndDate=A data final não pode ser anterior a data de início

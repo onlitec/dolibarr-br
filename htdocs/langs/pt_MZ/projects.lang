@@ -5,5 +5,5 @@ ProjectModifiedInDolibarr=Projeto %s modificado
 LinkToElementShort=Link para
 ProjectReferers=Itens correlatos
 OppStatusPENDING=Pedente
-NewInter=Nova Intervenção
+NewInter=Nova Ordem de Serviço
 StartDateCannotBeAfterEndDate=A data final não pode ser anterior a data de início

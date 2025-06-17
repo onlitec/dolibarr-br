@@ -1,8 +1,6 @@
 <?php
-/* Copyright (C) 2024-2025	MDW							<mdeweerd@users.noreply.github.com>
+/* Copyright (C) 2024		MDW							<mdeweerd@users.noreply.github.com>
  * Copyright (C) 2024       Frédéric France             <frederic.france@free.fr>
- *
- * This is the phan config file used by dev/tools/apstats.php
  */
 
 // Load default configuration (with many exclusions)
@@ -87,7 +85,7 @@ $config['suppress_issue_types'] = [
 
 		'PhanPluginNonBoolBranch',			// Not essential - 31240+ occurrences
 		'PhanPluginNumericalComparison',	// Not essential - 19870+ occurrences
-		// 'PhanTypeMismatchArgument',		// Most fixed ~120 occurrences (was: 12300+ before)
+		'PhanTypeMismatchArgument',			// Not essential - 12300+ occurrences
 		'PhanPluginNonBoolInLogicalArith',	// Not essential - 11040+ occurrences
 		'PhanPluginConstantVariableScalar',	// Not essential - 5180+ occurrences
 		'PhanPluginDuplicateAdjacentStatement',
@@ -97,8 +95,8 @@ $config['suppress_issue_types'] = [
 		'PhanPluginRedundantAssignment',				// Not essential, useless
 		'PhanPluginDuplicateCatchStatementBody',  // Requires PHP7.1 - 50+ occurrences
 
-		// 'PhanPluginUnknownArrayMethodParamType',	// All fixed
-		// 'PhanPluginUnknownArrayMethodReturnType',	// All fixed
+		'PhanPluginUnknownArrayMethodParamType',	// this option costs more time to be supported than it solves time
+		'PhanPluginUnknownArrayMethodReturnType',	// this option costs more time to be supported than it solves time
 		'PhanTypeSuspiciousNonTraversableForeach',  // Reports on `foreach ($object as $key => $value)` which works without php notices, so we ignore it because this is intentional in the code.
 ];
 

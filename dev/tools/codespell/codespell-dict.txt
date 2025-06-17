@@ -36,7 +36,6 @@ nowraponalls->nowraponall
 oddevene->oddeven
 oddseven->oddeven
 opacitymediuem->opacitymedium
-opend->opened
 pictofiwedwidth->pictofixedwidth
 pictofixedwith->pictofixedwidth
 shippin->shipping
