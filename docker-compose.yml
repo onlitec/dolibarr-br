@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: dolibarr
+      MYSQL_USER: dolibarr
+      MYSQL_PASSWORD: dolibarrpwd
+    volumes:
+      - db-data:/var/lib/mysql
+
+  web:
+    build: .
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    environment:
+      DOLI_DB_HOST: db
+      DOLI_DB_PORT: 3306
+      DOLI_DB_NAME: dolibarr
+      DOLI_DB_USER: dolibarr
+      DOLI_DB_PASSWORD: dolibarrpwd
+    volumes:
+      - ./:/var/www/html/htdocs
+
+volumes:
+  db-data: 
