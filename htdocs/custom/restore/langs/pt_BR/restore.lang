@@ -1,0 +1,78 @@
+# Arquivo de tradução em Português do Brasil para módulo Restore
+
+ModuleRestoreName=Restore
+ModuleRestoreDesc=Módulo para restaurar backups de banco de dados e arquivos
+RestoreDB=Restaurar Banco de Dados
+RestoreFiles=Restaurar Arquivos
+ErrorFileNotFound=Arquivo %s não encontrado
+SelectBackupFile=Selecione o arquivo de backup
+Restore=Restaurar
+RestoreSucceeded=Banco de dados restaurado com sucesso
+RestoreFailed=A restauração falhou. Verifique o log para detalhes.
+RestoreFilesSucceeded=Arquivos restaurados com sucesso
+RestoreFilesFailed=Falha ao restaurar arquivos
+AutomatedRestore=Restauração Automatizada
+FileUploadSuccess=Arquivo %s enviado com sucesso
+FileUploadFailed=Falha no envio do arquivo
+UploadBackupFile=Enviar arquivo de backup
+SelectFileToUpload=Selecione o arquivo para enviar
+Upload=Enviar
+RestoreFromBackup=Restaurar de um arquivo de backup existente
+ErrorUploadIniSize=O arquivo enviado excede a diretiva upload_max_filesize no php.ini.
+ErrorUploadPartial=O arquivo enviado foi apenas parcialmente carregado.
+ErrorUploadNoFile=Nenhum arquivo foi enviado.
+ErrorUploadNoTmpDir=Faltando uma pasta temporária.
+ErrorUploadCantWrite=Falha ao escrever o arquivo no disco.
+ErrorDirNotWritable=Erro: O diretório %s não tem permissão de escrita. Verifique as permissões do servidor.
+MaxUploadSize=Aviso: Seu servidor limita o upload a %s (upload_max_filesize) e o envio de formulários a %s (post_max_size).
+ErrorFailedToCleanDatabase=Falha ao tentar limpar o banco de dados.
+CleanDatabaseBeforeRestore=Limpar banco de dados antes de restaurar
+CleanDatabaseBeforeRestoreDesc=ATENÇÃO: Isso irá apagar permanentemente todos os dados atuais antes de importar o arquivo de backup.
+CriticalErrorAfterCleanDb=Erro Crítico: O banco de dados foi apagado mas a restauração falhou. Sua instalação do Dolibarr está agora inoperante.
+RestoreFailedDetails=O processo de restauração falhou. Abaixo estão os detalhes técnicos.
+HowToFixCriticalErrorAfterCleanDb=Para corrigir, você deve restaurar manualmente um arquivo de backup válido usando uma ferramenta como a linha de comando do mysql ou phpMyAdmin, e então tentar acessar o Dolibarr novamente.
+Command=Comando
+OutputLog=Log de Saída
+DatabaseCleanedSuccessfully=Banco de dados limpo com sucesso.
+ErrorFailedToDropTable=Falha ao apagar a tabela %s.
+ErrorFailedToListTables=Falha ao listar as tabelas do banco de dados para limpeza.
+
+# Smart Restore
+SmartRestore=Restauração Inteligente
+SelectBackupFileToAnalyze=Selecione o arquivo de backup para analisar
+Analyze=Analisar
+SmartRestore_InfoBoxTitle=Como funciona a Restauração Inteligente?
+SmartRestore_InfoBoxContent=Esta ferramenta analisa o seu arquivo de backup e o compara com a sua instalação atual do Dolibarr.<br><br>Ela detecta problemas comuns, como prefixos de tabela incorretos ou versões incompatíveis, e propõe um plano de ação automatizado para garantir uma restauração segura e bem-sucedida.
+
+# Analysis Results
+Parameter=Parâmetro
+ValueInBackup=Valor no Backup
+CurrentValue=Valor Atual
+Status=Status
+TablePrefix=Prefixo da Tabela
+Version=Versão
+RecommendedActionPlan=Plano de Ação Recomendado
+BackupLooksGood=O arquivo de backup parece compatível com a sua instalação atual. Você pode prosseguir com a restauração padrão.
+Execute=Executar
+
+# Action Plan
+Action=Ação
+ExecuteActionPlan=Executar Plano de Ação
+ActionFixPrefix=Corrigir o prefixo da tabela no arquivo de configuração de '<b>%2$s</b>' para '<b>%1$s</b>'.
+ActionRunMigration=Executar o processo de migração de dados do Dolibarr, pois a versão do backup (<b>%1$s</b>) é diferente da versão instalada (<b>%2$s</b>).
+
+# Execution
+ErrorFileNotFound=Arquivo de backup '%s' não encontrado no diretório temporário. Por favor, inicie o processo novamente.
+DatabaseRestoredSuccessfully=Banco de dados restaurado com sucesso.
+ConfFileUpdatedSuccessfully=Arquivo de configuração conf.php atualizado com sucesso para o prefixo '<b>%s</b>'.
+ErrorUpdatingConfFile=Erro ao atualizar o arquivo conf.php. Verifique as permissões de escrita.
+ErrorRestoringDatabase=Erro ao restaurar o banco de dados.
+ActionPlanExecuted=Plano de Ação Executado
+SmartRestoreFinished=A restauração inteligente foi concluída. Por favor, acesse a %s para verificar o sistema. Se a versão foi alterada, o Dolibarr pode solicitar o início do processo de migração.
+HomePage=página inicial do Dolibarr
+
+# Restore DB Page
+SelectBackupFile=Selecione o arquivo de backup do banco de dados (.sql, .sql.gz)
+CleanDatabaseFirst=Limpar banco de dados antes de restaurar
+CleanDatabaseFirstDesc=Apaga todas as tabelas existentes no banco de dados atual antes de executar a restauração. Use com cuidado!
+ExecuteRestore=Executar Restauração

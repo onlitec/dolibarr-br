@@ -1,0 +1,219 @@
+
+Prompt for Developing a Dolibarr Module: Service Order Geolocation and Travel Cost Calculation
+Objective
+Develop a custom module for Dolibarr ERP/CRM to enhance the service order and invoice functionalities. The module will:
+
+Add a field to the service order form to input the address where the service will be executed and store its geolocation.
+Allow selection of the company's registered address as the origin or input a custom origin address.
+Calculate the distance between the origin and destination addresses when generating an invoice from the service order.
+Include fields to register fuel cost, vehicle fuel consumption, and calculate the cost per kilometer traveled.
+Display material, service, and travel costs (based on mileage) on the generated invoice.
+
+Module Requirements
+1. Module Metadata
+
+Module Name: ServiceGeoCost
+Version: 1.0
+Compatibility: Dolibarr 16.x or higher
+Description: Adds geolocation and travel cost calculation to service orders and invoices.
+Dependencies: Dolibarr core modules (Service Order, Invoice, Company).
+License: GPL v3
+
+2. Database Modifications
+
+Add fields to the llx_commande table (or a custom table linked to service orders):
+service_address (TEXT): Address where the service will be executed.
+geolocation_lat (FLOAT): Latitude of the service address.
+geolocation_lng (FLOAT): Longitude of the service address.
+origin_address (TEXT): Origin address (company address or custom).
+distance_km (FLOAT): Calculated distance between origin and destination.
+fuel_cost_per_liter (FLOAT): Fuel cost per liter.
+vehicle_consumption (FLOAT): Vehicle fuel consumption (liters per km).
+cost_per_km (FLOAT): Calculated cost per kilometer.
+
+
+Ensure database migrations are handled to support upgrades and maintain compatibility.
+
+3. User Interface Modifications
+
+Service Order Form:
+Add a text field for the service execution address.
+Integrate a geolocation API (e.g., Google Maps API or OpenStreetMap) to fetch and store latitude/longitude based on the entered address.
+Add a dropdown or radio button to select the origin address:
+Option 1: Use the company's registered address (fetched from llx_societe).
+Option 2: Input a custom origin address.
+
+
+Add fields for:
+Fuel cost per liter.
+Vehicle fuel consumption (liters per km).
+
+
+
+
+Invoice Form:
+When generating an invoice from a service order, calculate the distance between the origin and destination addresses using a geolocation API.
+Calculate the travel cost: distance_km * vehicle_consumption * fuel_cost_per_liter.
+Display a breakdown of costs on the invoice:
+Material costs (from existing Dolibarr functionality).
+Service costs (from existing Dolibarr functionality).
+Travel costs (based on mileage calculation).
+
+
+
+
+
+4. Business Logic
+
+Geolocation:
+Use a geolocation API to convert the service address to latitude/longitude coordinates and store them in the database.
+Validate the address input to ensure it is resolvable by the API.
+
+
+Distance Calculation:
+Use a distance matrix API (e.g., Google Distance Matrix API or OpenRouteService) to calculate the distance between the origin and destination addresses.
+Store the calculated distance in the distance_km field.
+
+
+Cost Calculation:
+Compute the cost per kilometer: cost_per_km = vehicle_consumption * fuel_cost_per_liter.
+Compute the total travel cost: total_travel_cost = distance_km * cost_per_km.
+
+
+Invoice Integration:
+Add a new line item to the invoice for travel costs, clearly labeled (e.g., "Travel Cost (Mileage)").
+Ensure the travel cost is included in the invoice total.
+
+
+
+5. Technical Requirements
+
+Language: PHP (compatible with Dolibarr's framework).
+Framework: Follow Dolibarr's module development guidelines (use Mod class, hooks, and triggers).
+APIs:
+Integrate a geolocation API for address-to-coordinates conversion.
+Integrate a distance matrix API for distance calculations.
+Ensure API keys are configurable via the module's settings page.
+
+
+Security:
+Sanitize all user inputs to prevent SQL injection and XSS attacks.
+Restrict access to module features based on Dolibarr user permissions.
+
+
+Configuration:
+Create a module settings page to:
+Enable/disable geolocation and distance calculation features.
+Input API keys for geolocation and distance matrix services.
+Set default values for fuel cost and vehicle consumption.
+
+
+
+
+
+6. User Experience
+
+Ensure the new fields blend seamlessly with Dolibarr’s existing UI.
+Provide tooltips or help text for new fields (e.g., explaining fuel consumption input).
+Display a warning if the geolocation API fails to resolve an address.
+Show a summary of travel costs on the invoice preview.
+
+7. Testing Requirements
+
+Test the module on a clean Dolibarr installation.
+Verify:
+Address input and geolocation storage.
+Origin address selection (company vs. custom).
+Distance calculation accuracy using the API.
+Travel cost calculation and invoice integration.
+Compatibility with existing service order and invoice workflows.
+
+
+Handle edge cases:
+Invalid or unresolvable addresses.
+Missing API keys.
+Zero or negative fuel cost/consumption inputs.
+
+
+
+8. Deliverables
+
+A complete Dolibarr module package (zipped, with module_name directory structure).
+Installation instructions.
+User guide explaining how to configure and use the module.
+Sample API keys (if using a free tier of an API for testing).
+
+9. Development Guidelines
+
+Follow Dolibarr’s coding standards (e.g., PSR-2 for PHP).
+Use Dolibarr’s built-in translation system for multi-language support.
+Ensure the module is modular and does not break core Dolibarr functionality.
+Include error handling for API failures and invalid inputs.
+Optimize for performance (e.g., cache API results where possible).
+
+10. Optional Enhancements
+
+Add a map preview in the service order form showing the service address.
+Allow multiple vehicles with different consumption rates to be configured.
+Generate a report summarizing travel costs across multiple service orders.
+
+Prompt Instructions
+
+Develop the module based on the above requirements.
+Use Dolibarr’s module development documentation (available at https://wiki.dolibarr.org) as a reference.
+Provide the complete source code, including:
+PHP files for the module logic.
+SQL scripts for database modifications.
+JavaScript/CSS for UI enhancements (if needed).
+Configuration files for API integration.
+
+
+Test the module thoroughly and document any limitations or dependencies.
+If external APIs are used, recommend free or open-source options (e.g., OpenStreetMap for geolocation, OpenRouteService for distance calculation) to minimize costs.
+
+Arquivo de configuração inexistente
+O descriptor declara
+Apply
+mas não há nenhum admin_serviceordergeo.php no repositório. É preciso criar essa página (ex.: em htdocs/custom/serviceordergeo/htdocs/admin/admin_serviceordergeo.php) e registrar seu menu no descriptor.
+Menu de acesso ao setup ausente
+Em modServiceordergeo::__construct() o array $this->menus está vazio, então não há link “Setup > Geolocation & Cost” para acessar sua página de configuração. Você deve adicionar uma entrada em $this->menus apontando para o seu admin_serviceordergeo.php.
+importação de main.inc.php incorreta no endpoint de geocoding
+Em htdocs/custom/serviceordergeo/htdocs/api/serviceordergeo/geocode.php o
+Apply
+não alcança o main.inc.php raiz do Dolibarr. Será necessário ajustar o número de ../ ou usar dol_buildpath para incluir corretamente o bootstrap.
+Falta lógica de persistência dos novos campos
+O hook formObjectOptions() apenas insere os campos de endereço e coordenadas no formulário de pedido, mas não há hook para capturar e salvar esses valores (nem para calcular distância e custo ao gerar a fatura).
+Cálculo de distância e custo não implementado
+Embora haja campos na tabela e um hook de exibição em printFieldList(), não existe lógica que, ao validar ou criar a fatura, preencha distance_km e travel_cost com base na origem, destino e parâmetros de configuração.
+Sugestões de melhorias
+Mover a pasta api/ para o nível superior de custom/serviceordergeo (remover o subdiretório extra htdocs/) ou ajustar todas as URLs/require…
+Criar a página de setup (eventualmente usando FormAdmin) para definir preço de combustível, consumo, custos extras e prover valores padrão.
+Registrar triggers (por ex. TRANSFORM_PAYMENT_SUPPLIER_CREATE ou INVOICE_VALIDATE) para executar cálculo automático.
+
+o sistema de vgeolocalização poderá utilizar o HTML5 Geolocation API
+
+
+implmente os passos seguintes
+
+Linha de “Travel Cost” na fatura
+Inserir automaticamente um produto/serviço (ou uma linha extra) na fatura, representando o custo de deslocamento, de forma que seja somado ao total.
+Página de configuração avançada
+Substituir o stub de admin_serviceordergeo.php por um FormAdmin completo que:
+Permita definir chaves de API (geocoding e distance matrix).
+Configure valores padrão de fuel_price, fuel_consumption e other_costs.
+Salve essas opções em constantes MAIN_MODULE_SERVICEORDERGEO_* no llx_const.
+Infraestrutura do endpoint API
+Mover o endpoint de geocoding para /custom/serviceordergeo/api/serviceordergeo/geocode.php (remover subpasta extra).
+Em vez de require '../../../main.inc.php', usar require dol_buildpath('…/main.inc.php', 1).
+Criar também endpoint para cálculo de rota/distância (por ex. distance.php).
+Robustez e UX
+Tratar erros no formulário de pedido (ex.: falha na geocodificação ou na matriz de distância).
+Adicionar tooltips/help texts em todos os campos novos.
+(Opcional) Mostrar pré-visualização de mapa após inserir o endereço.
+Validar formatos de endereço nos inputs.
+Testes e documentação
+Criar testes automatizados (unitários e de aceitação) para verificar:
+Salvamento dos campos de pedido.
+Cálculo de distância e custo.
+Geração da linha de fatura.
+Atualizar README com instruções de instalação, configuração e uso.

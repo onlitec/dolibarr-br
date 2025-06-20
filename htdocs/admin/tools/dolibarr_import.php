@@ -228,6 +228,40 @@ print '</div>';
 print '</td></tr></table>';
 print '</fieldset>';
 
+// Add automated restore section if restore module is enabled
+if (! empty($conf->restore->enabled)) {
+    $langs->load("restore@restore");
+    print '<div class="fichecenter"><div class="fichehalfleft">';
+    print '<fieldset>';
+    print '<legend>'.$langs->trans("AutomatedRestore").'</legend>';
+    print '<div class="div-table-responsive-no-min">';
+    print '<table class="noborder" width="100%">';
+    print '<tr class="liste_titre">';
+    print '<td>'.$langs->trans("Feature").'</td>';
+    print '<td>'.$langs->trans("Action").'</td>';
+    print '</tr>';
+    print '<tr class="oddeven">';
+    print '<td>'.$langs->trans("RestoreDatabase").'</td>';
+    print '<td><a class="butAction" href="'.DOL_URL_ROOT.'/custom/restore/restore_db.php">'.$langs->trans("Execute").'</a></td>';
+    print '</tr>';
+    print '<tr class="oddeven">';
+    print '<td>'.$langs->trans("RestoreFiles").'</td>';
+    print '<td><a class="butAction" href="'.DOL_URL_ROOT.'/custom/restore/restore_files.php">'.$langs->trans("Execute").'</a></td>';
+    print '</tr>';
+    print '<tr class="oddeven">';
+    print '<td>'.$langs->trans("SmartRestore").'</td>';
+    print '<td><a class="butAction" href="'.DOL_URL_ROOT.'/custom/restore/restore_smart.php">'.$langs->trans("Execute").'</a></td>';
+    print '</tr>';
+
+    print "</table>";
+    print "</div>";
+    print "</fieldset>";
+    print '</div></div><br>';
+}
+
+// Show import assistants
+print load_fiche_titre($langs->trans("DataImport"));
+
 // End of page
 llxFooter();
 $db->close();

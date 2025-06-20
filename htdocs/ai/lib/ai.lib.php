@@ -79,13 +79,10 @@ function getListOfAIServices()
 		),
 		'groq' => array(
 			'label' => 'Groq',
-			'url' => 'https://api.groq.com/openai/',
-			'textgeneration' => 'mixtral-8x7b-32768',	// 'llama3-8b-8192', 'gemma-7b-it'
-			'imagegeneration' => 'na',
-			'audiogeneration' => 'na',
-			'videogeneration' => 'na',
-			'transcription' => 'na',
-			'translation' => 'na',
+			'models' => array('llama3-8b-8192', 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'),
+			'url' => 'https://api.groq.com/openai/v1/',
+			'docs' => 'https://console.groq.com/docs/quickstart',
+			'api_key_name' => 'GROQ_API_KEY'
 		),
 		'mistral' => array(
 			'label' => 'Mistral',

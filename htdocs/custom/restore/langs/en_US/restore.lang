@@ -1,0 +1,47 @@
+HowToFixCriticalErrorAfterCleanDb=To fix this, you MUST manually restore a valid database backup using a tool like the mysql command line or phpMyAdmin, then try to access Dolibarr again.
+Command=Command
+OutputLog=Output Log
+DatabaseCleanedSuccessfully=Database cleaned successfully.
+ErrorFailedToDropTable=Failed to drop table %s.
+ErrorFailedToListTables=Failed to list database tables for cleaning.
+
+# Smart Restore
+SmartRestore=Smart Restore
+SelectBackupFileToAnalyze=Select backup file to analyze
+Analyze=Analyze
+SmartRestore_InfoBoxTitle=How does Smart Restore work?
+SmartRestore_InfoBoxContent=This tool analyzes your backup file and compares it with your current Dolibarr installation.<br><br>It detects common issues like incorrect table prefixes or incompatible versions, and proposes an automated action plan to ensure a safe and successful restore.
+ErrorUploadCantWrite=Failed to write file to disk.
+
+# Analysis Results
+Parameter=Parameter
+ValueInBackup=Value in Backup
+CurrentValue=Current Value
+Status=Status
+TablePrefix=Table Prefix
+Version=Version
+RecommendedActionPlan=Recommended Action Plan
+BackupLooksGood=The backup file seems to be compatible with your current installation. You can proceed with the standard restore.
+Execute=Execute
+
+# Action Plan
+Action=Action
+ExecuteActionPlan=Execute Action Plan
+ActionFixPrefix=Fix table prefix in configuration file from '<b>%2$s</b>' to '<b>%1$s</b>'.
+ActionRunMigration=Run the Dolibarr data migration process, as the backup version (<b>%1$s</b>) is different from the installed version (<b>%2$s</b>).
+
+# Execution
+ErrorFileNotFound=Backup file '%s' not found in the temporary directory. Please start the process again.
+DatabaseRestoredSuccessfully=Database restored successfully.
+ConfFileUpdatedSuccessfully=Configuration file conf.php successfully updated to prefix '<b>%s</b>'.
+ErrorUpdatingConfFile=Error updating conf.php file. Please check write permissions.
+ErrorRestoringDatabase=Error while restoring the database.
+ActionPlanExecuted=Action Plan Executed
+SmartRestoreFinished=The smart restore has been completed. Please go to the %s to check the system. If the version was changed, Dolibarr may ask you to start the migration process.
+HomePage=Dolibarr home page
+
+# Restore DB Page
+SelectBackupFile=Select database backup file (.sql, .sql.gz)
+CleanDatabaseFirst=Clean database before restoring
+CleanDatabaseFirstDesc=Deletes all existing tables in the current database before performing the restore. Use with caution!
+ExecuteRestore=Execute Restore 
