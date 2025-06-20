@@ -1,0 +1,35 @@
+# English translation file for restore module
+
+ModuleRestoreName=Restore
+ModuleRestoreDesc=Module to restore database and files backups
+RestoreDB=Restore Database
+RestoreFiles=Restore Files
+ErrorFileNotFound=File %s not found
+SelectBackupFile=Select backup file
+Restore=Restore
+RestoreSucceeded=Database restored successfully
+RestoreFailed=Failed to restore database
+RestoreFilesSucceeded=Files restored successfully
+RestoreFilesFailed=Failed to restore files
+AutomatedRestore=Automated Restore
+FileUploadSuccess=File %s uploaded successfully
+FileUploadFailed=File upload failed
+UploadBackupFile=Upload backup file
+SelectFileToUpload=Select file to upload
+Upload=Upload
+RestoreFromBackup=Restore from an existing backup file
+ErrorUploadIniSize=The uploaded file exceeds the upload_max_filesize directive in php.ini.
+ErrorUploadPartial=The uploaded file was only partially uploaded.
+ErrorUploadNoFile=No file was uploaded.
+ErrorUploadNoTmpDir=Missing a temporary folder.
+ErrorUploadCantWrite=Failed to write file to disk.
+ErrorDirNotWritable=Error: Directory %s is not writable. Check server permissions.
+MaxUploadSize=Note: Server upload limit is %s (upload_max_filesize) and POST limit is %s (post_max_size).
+ErrorFailedToCleanDatabase=Failed to clean database before restore. Check log for details.
+CleanDatabaseBeforeRestore=Clean database before restore
+CleanDatabaseBeforeRestoreDesc=WARNING: This will permanently delete all current data before importing the backup file.
+CriticalErrorAfterCleanDb=Critical Error: The database was wiped but the restore failed. Your Dolibarr installation is now broken.
+RestoreFailedDetails=The restore process failed. Below are the technical details.
+HowToFixCriticalErrorAfterCleanDb=To fix this, you must manually restore a valid database backup file using a tool like mysql command line or phpMyAdmin, then try to access Dolibarr again.
+Command=Command
+OutputLog=Output Log 
