@@ -76,3 +76,17 @@ SelectBackupFile=Selecione o arquivo de backup do banco de dados (.sql, .sql.gz)
 CleanDatabaseFirst=Limpar banco de dados antes de restaurar
 CleanDatabaseFirstDesc=Apaga todas as tabelas existentes no banco de dados atual antes de executar a restauração. Use com cuidado!
 ExecuteRestore=Executar Restauração
+
+# Files Restore Analysis
+BackupFilesAnalysis=Análise do Backup de Arquivos
+BackupContent=Conteúdo do Backup
+Directories=Diretórios
+CurrentSystem=Sistema Atual
+FilesRestoreWarning=Aviso: A restauração de arquivos substituirá quaisquer arquivos existentes com o mesmo nome no diretório de documentos. Esta ação não pode ser desfeita.
+RestoreFiles=Restaurar Arquivos
+
+# Files Restore Execution
+FilesRestoredSuccessfully=Arquivos restaurados com sucesso.
+FilesRestoreFinishedInstructions=A restauração dos arquivos foi concluída. Verifique o diretório de documentos para confirmar se os arquivos foram restaurados corretamente.
+ErrorExtractingBackup=Erro ao extrair o arquivo de backup.
+ErrorOpeningBackupFile=Não foi possível abrir o arquivo de backup.

