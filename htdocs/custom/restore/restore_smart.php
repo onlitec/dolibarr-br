@@ -126,7 +126,15 @@ if (!is_dir($upload_dir)) {
                         setEventMessage("Usuário 'alfreire' não encontrado", 'errors');
                     }
 
-                    // --- 4. Final instructions ---
+                    // --- 4. Trigger migration ---
+                    $backup_version = GETPOST('backup_version', 'alpha');
+                    global $dolibarr_version;
+                    if ($backup_version && version_compare($backup_version, $dolibarr_version, '!=')) {
+                        // Redirect to migration page
+                        print '<script type="text/javascript">window.location.href="'.DOL_URL_ROOT.'/install/upgrade.php?versionfrom='.dol_escape_htmltag($backup_version).'&versionto='.dol_escape_htmltag($dolibarr_version).'";</script>';
+                        exit;
+                    }
+                    // --- 5. Final instructions ---
                     print '<br>'.load_fiche_titre($langs->trans("RestoreFinished"), '', 'technic.png@restore');
                     print $langs->trans("RestoreFinishedInstructions");
 
@@ -522,6 +530,8 @@ function display_analysis_results($analysis_result)
         print '<input type="hidden" name="action" value="execute_plan">';
         print '<input type="hidden" name="backup_file_name" value="'.dol_escape_htmltag($_FILES['backupfile']['name']).'">';
         print '<input type="hidden" name="backup_prefix" value="'.dol_escape_htmltag($analysis_result['prefix']).'">';
+        print '<input type="hidden" name="backup_version" value="'.dol_escape_htmltag($analysis_result['version']).'">';
+        print '<input type="hidden" name="current_version" value="'.dol_escape_htmltag($dolibarr_version).'">';
 print '<input type="hidden" name="restore_type" value="'.dol_escape_htmltag(GETPOST('restore_type','alpha')).'">';
 print '<input type="hidden" name="restore_type" value="'.dol_escape_htmltag(GETPOST('restore_type','alpha')).'">'; 
 
@@ -579,6 +589,8 @@ function update_conf_file_prefix($conf_file_path, $new_prefix)
 
 // --- Start of page content ---
 
+if (GETPOST('action','alpha') !== 'analyze') {
+
 print '<div class="fichecenter">';
 print '<div class="fichehalfleft">';
 
@@ -611,6 +623,8 @@ print info_box($langs->trans("SmartRestore_InfoBoxTitle"), $info_content);
 
 print '</div>';
 print '</div>';
+
+}
 
 // --- End of page content ---
 
