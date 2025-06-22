@@ -1,0 +1,66 @@
+<?php
+/*
+ * Actions class for Certificado module
+ */
+
+class ActionsCertificado
+{
+    /** @var DoliDB Database handler */
+    private $db;
+
+    public function __construct($db)
+    {
+        $this->db = $db;
+    }
+
+    // ... outros métodos ...
+
+
+    /**
+     * Instala o cliente YAAC (acme client) via Composer
+     * @param array<string> &$output saída de comandos
+     * @return bool
+     */
+    public function installYaacClient(array &$output): bool
+    {
+        // Log inicial
+        dol_syslog("Iniciando instalação do YAAC via Composer", LOG_DEBUG);
+        
+        // Verifica se o diretório existe e tem permissão de escrita
+        $targetDir = DOL_DOCUMENT_ROOT;
+        if (!is_writable($targetDir)) {
+            dol_syslog("Diretório sem permissão de escrita: " . $targetDir, LOG_ERR);
+            $output[] = "Erro: Diretório sem permissão de escrita: " . $targetDir;
+            return false;
+        }
+        
+        // Define a variável de ambiente HOME se não estiver definida
+        $homeDir = getenv('HOME');
+        if (empty($homeDir)) {
+            // Se não houver HOME definida, usa o diretório temporário do sistema
+            $homeDir = sys_get_temp_dir() . '/composer_home';
+            if (!file_exists($homeDir)) {
+                mkdir($homeDir, 0755, true);
+            }
+            putenv('HOME=' . $homeDir);
+            dol_syslog("Definindo HOME para: " . $homeDir, LOG_DEBUG);
+        }
+        
+        // Monta o comando com as variáveis de ambiente necessárias
+        $cmd = 'export HOME=' . escapeshellarg($homeDir) . ' && ';
+        $cmd .= 'cd ' . escapeshellarg($targetDir) . ' && ';
+        $cmd .= 'composer require afosto/yaac --no-interaction --no-plugins 2>&1';
+        
+        dol_syslog("Executando comando: " . $cmd, LOG_DEBUG);
+        
+        // Executa o comando
+        exec($cmd, $output, $ret);
+        
+        // Log do resultado
+        dol_syslog("Resultado do comando (código: $ret): " . print_r($output, true), LOG_DEBUG);
+        
+        return $ret === 0;
+    }
+
+    // ... outros métodos ...
+}
