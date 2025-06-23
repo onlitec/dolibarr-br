@@ -20,7 +20,7 @@ class modServiceordergeo extends DolibarrModules
         $this->family = 'services';
         $this->name = 'Serviceordergeo';    // Nome interno (sem espaços)
         $this->description = 'Módulo de Ordem de Serviço com Geolocalização e Cálculo de Custo';
-        $this->version = '1.0.0';
+        $this->version = '1.1.0';
         $this->const_name = 'MAIN_MODULE_SERVICEORDERGEO';
         $this->picto = 'serviceordergeo@serviceordergeo';
 

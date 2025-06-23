@@ -45,11 +45,11 @@ function showRowConfig($labelKey, $helpKey, $name, $value) {
 }
 
 // Linhas de configuração
-showRowConfig('FieldGeocodeAPIKey','HelpGeocodeAPIKey','geocode_api_key', $conf->global->SERVICEORDERGEO_GEOCODE_API_KEY);
-showRowConfig('FieldDistanceAPIKey','HelpDistanceAPIKey','distance_api_key', $conf->global->SERVICEORDERGEO_DISTANCE_API_KEY);
-showRowConfig('FieldDefaultFuelPrice','HelpDefaultFuelPrice','default_fuel_price', $conf->global->SERVICEORDERGEO_DEFAULT_FUEL_PRICE);
-showRowConfig('FieldDefaultFuelConsumption','HelpDefaultFuelConsumption','default_fuel_consumption', $conf->global->SERVICEORDERGEO_DEFAULT_FUEL_CONSUMPTION);
-showRowConfig('FieldDefaultOtherCosts','HelpDefaultOtherCosts','default_other_costs', $conf->global->SERVICEORDERGEO_DEFAULT_OTHER_COSTS);
+showRowConfig('FieldGeocodeAPIKey','HelpGeocodeAPIKey','geocode_api_key', isset($conf->global->SERVICEORDERGEO_GEOCODE_API_KEY) ? $conf->global->SERVICEORDERGEO_GEOCODE_API_KEY : '');
+showRowConfig('FieldDistanceAPIKey','HelpDistanceAPIKey','distance_api_key', isset($conf->global->SERVICEORDERGEO_DISTANCE_API_KEY) ? $conf->global->SERVICEORDERGEO_DISTANCE_API_KEY : '');
+showRowConfig('FieldDefaultFuelPrice','HelpDefaultFuelPrice','default_fuel_price', isset($conf->global->SERVICEORDERGEO_DEFAULT_FUEL_PRICE) ? $conf->global->SERVICEORDERGEO_DEFAULT_FUEL_PRICE : '');
+showRowConfig('FieldDefaultFuelConsumption','HelpDefaultFuelConsumption','default_fuel_consumption', isset($conf->global->SERVICEORDERGEO_DEFAULT_FUEL_CONSUMPTION) ? $conf->global->SERVICEORDERGEO_DEFAULT_FUEL_CONSUMPTION : '');
+showRowConfig('FieldDefaultOtherCosts','HelpDefaultOtherCosts','default_other_costs', isset($conf->global->SERVICEORDERGEO_DEFAULT_OTHER_COSTS) ? $conf->global->SERVICEORDERGEO_DEFAULT_OTHER_COSTS : '');
 
 print '</table>';
 print '<div class="tabsAction"><input type="submit" class="button" value="'.$langs->trans('Save').'" /></div>';
